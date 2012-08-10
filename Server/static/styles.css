@@ -1,0 +1,10 @@
+#main-area {
+    background-color: #AEBDCC;
+    color: #000000;
+    border-radius: 10px;
+
+    margin: 100px;
+    padding: 40px;
+    width: 1400px;
+    height: 700px;
+}

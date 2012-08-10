@@ -1,0 +1,14 @@
+{
+    "name": "sockets-server",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "express": "3.0.0rc2",
+        "ejs": "0.8.0",
+        "socket.io": "0.9.9"
+    },
+    "engines": {
+        "node": ">= 0.8.6",
+        "npm": ">= 1.0.x"
+    }
+}
