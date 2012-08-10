@@ -19,7 +19,7 @@ app.get('/', function (req, res) {
 });
 
 var dataCallback = function(data) {
-    socketToClient.write(data);
+    socketToClient.writeImage(data);
 };
 
 socketToClient.initialize(server);

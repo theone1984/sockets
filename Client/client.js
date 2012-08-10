@@ -9,16 +9,14 @@ var rl = readLine.createInterface({
 });
 
 var askForNexToken = function() {
-    rl.question("Whicht token to send?", function(answer) {
-        console.log("Sending token: '", answer, "'");
-        client.write(answer);
+    rl.question("Whicht file to send?", function(filePath) {
+        console.log("Sending image from path: '", filePath, "'");
+        client.writeImage(filePath);
         askForNexToken();
     });
 };
 
 askForNexToken();
-
-
 
 
 

@@ -1,5 +1,8 @@
 var fs = require('fs');
 var io = require('socket.io');
+var toDataUrl = require('toDataUrl');
+
+
 
 exports.createSocket = function() {
     var ioManager;
@@ -24,8 +27,15 @@ exports.createSocket = function() {
         }
     };
 
+    var writeImage = function(imageData) {
+        if(started) {
+            serverSocket.emit('image', { 'data': imageData });
+        }
+    };
+
     return {
-        "initialize": initialize,
-        "write": write
+        initialize: initialize,
+        write: write,
+        writeImage: writeImage
     };
 };

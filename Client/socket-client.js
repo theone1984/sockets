@@ -1,4 +1,6 @@
 var net = require('net');
+var fs = require('fs');
+var base64Encoder = require('./base64-encoder.js');
 
 exports.connect = function(port) {
     var connected = false;
@@ -25,7 +27,14 @@ exports.connect = function(port) {
     var write = function(data) {
         if (connected) {
             client.write(data);
-        }
+         }
+    };
+
+    var writeImage = function(imagePath) {
+        fs.readFile(imagePath, function(err, data) {
+            var encodedData = base64Encoder.encode(data);
+            write(encodedData);
+        });
     };
 
     var isConnected = function() {
@@ -36,6 +45,7 @@ exports.connect = function(port) {
 
     return {
         write: write,
+        writeImage: writeImage,
         isConnected: isConnected
     };
 };

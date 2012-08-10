@@ -10,12 +10,13 @@
 <body>
 
 <div id="main-area">
+    <img id="main-image" src="/static/image_start.png" />
 </div>
 
 <script>
     var socket = io.connect('http://localhost');
-    socket.on('data', function (data) {
-        $('#main-area').append('<p>' + data.message + '</p>');
+    socket.on('image', function (data) {
+        $('#main-image').attr('src', data.data);
     });
 </script>
 
