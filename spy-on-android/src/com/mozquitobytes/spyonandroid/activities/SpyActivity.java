@@ -13,13 +13,15 @@ import android.widget.ImageView;
 import com.google.inject.Inject;
 import com.mozquitobytes.spyonandroid.R;
 import com.mozquitobytes.spyonandroid.interfaces.BitmapListener;
-import com.mozquitobytes.spyonandroid.interfaces.CameraHandler;
-import com.mozquitobytes.spyonandroid.interfaces.ErrorHandler;
-import com.mozquitobytes.spyonandroid.utilities.DataUrlListener;
+import com.mozquitobytes.spyonandroid.interfaces.DataFromServerListener;
+import com.mozquitobytes.spyonandroid.interfaces.DataUrlListener;
+import com.mozquitobytes.spyonandroid.interfaces.ErrorListener;
+import com.mozquitobytes.spyonandroid.utilities.CameraHandler;
 import com.mozquitobytes.spyonandroid.utilities.SocketClient;
 
 public class SpyActivity extends RoboActivity {
-    
+    private static final String SWITCH_MESSAGE_COMMAND = "switch-camera";
+
     @Inject
     private SocketClient socketClient;
     
@@ -71,9 +73,17 @@ public class SpyActivity extends RoboActivity {
     }
     
     private void initializeSocketHandlers() {
-        socketClient.setOnErrorListener(new ErrorHandler() {
+        socketClient.setOnErrorListener(new ErrorListener() {
             public void onError(Throwable e) {
                 Log.e("socket", e.getMessage());
+            }
+        });
+        
+        socketClient.setOnDataFromServerListener(new DataFromServerListener() {
+            public void onMessage(String message) {
+                if (SWITCH_MESSAGE_COMMAND.equals(message)) {
+                    cameraHandler.switchCamera();
+                }
             }
         });
     }
@@ -94,5 +104,6 @@ public class SpyActivity extends RoboActivity {
     protected void onDestroy() {
         super.onDestroy();
         cameraHandler.dispose();
+        socketClient.dispose();
     }
 }

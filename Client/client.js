@@ -9,7 +9,7 @@ var rl = readLine.createInterface({
 });
 
 var askForNexToken = function() {
-    rl.question("Whicht file to send?", function(filePath) {
+    rl.question("Which file to send?", function(filePath) {
         console.log("Sending image from path: '", filePath, "'");
         client.writeImage(filePath);
         askForNexToken();
@@ -17,10 +17,3 @@ var askForNexToken = function() {
 };
 
 askForNexToken();
-
-
-
-
-
-
-

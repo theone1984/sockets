@@ -5,9 +5,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import com.mozquitobytes.spyonandroid.interfaces.ErrorHandler;
-
 import roboguice.inject.ContextScoped;
+
+import com.mozquitobytes.spyonandroid.interfaces.DataFromServerListener;
+import com.mozquitobytes.spyonandroid.interfaces.ErrorListener;
 
 @ContextScoped
 public class SocketClient  {
@@ -23,7 +24,9 @@ public class SocketClient  {
     
     private String latestMessageToSend;
     
-    private ErrorHandler errorHandler;
+    private ErrorListener errorListener;
+    
+    private DataFromServerListener dataFromServerListener;
     
     public SocketClient() {
         latestMessageToSend = "";
@@ -35,6 +38,7 @@ public class SocketClient  {
         
         startConnectThread();
         startSendThread();
+        startReadThread();
     }
     
     private void startConnectThread() {
@@ -106,23 +110,46 @@ public class SocketClient  {
             sendError(e);
         }
     }
-
-//    public String read() {
-//        if (!isConnected()) {
-//            throw new IllegalStateException("Cannot read from stream, socket is closed");
-//        }
-//        
-//        try {
-//            return "";
-//            //return socketInputStream.read(b)
-//        } catch (Exception e) {
-//            throw new IllegalStateException("Reading from stream failed");
-//        }
-//    }
     
+    private void startReadThread() {
+        Thread readThread = new Thread() {
+            public void run() {
+                while(!disposed) {
+                    String message = readMessage();
+                    if (message != null) {
+                        sendMessage(message.trim());
+                    }                  
+                    sleepFor(20);
+                }
+            }
+        };        
+        readThread.start();
+    }
+
+
+    protected String readMessage() {
+        if (!isConnected()) {
+            sendError(new IllegalStateException("Cannot read from stream, socket is closed"));
+        }
+
+        try {
+            byte[] buffer = new byte[1024];
+            socketInputStream.read(buffer);
+            return new String(buffer, "UTF-8");
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    protected void sendMessage(String message) {
+        if (dataFromServerListener != null) {
+            dataFromServerListener.onMessage(message);
+        }
+    }
+
     public void sendError(Throwable e) {
-        if (errorHandler != null) {
-            errorHandler.onError(e);
+        if (errorListener != null) {
+            errorListener.onError(e);
         }
     }
     
@@ -138,7 +165,11 @@ public class SocketClient  {
         latestMessageToSend = message;
     }
     
-    public void setOnErrorListener(ErrorHandler errorHandler) {
-        this.errorHandler = errorHandler;
+    public void setOnErrorListener(ErrorListener errorListener) {
+        this.errorListener = errorListener;
+    }
+    
+    public void setOnDataFromServerListener(DataFromServerListener dataFromServerListener) {
+        this.dataFromServerListener = dataFromServerListener;
     }
 }

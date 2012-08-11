@@ -10,13 +10,23 @@
 <body>
 
 <div id="main-area">
-    <img id="main-image" src="/static/image_start.png" />
+    <h1>Spy on your android</h1>
+    <div id="picture-container">
+        <img id="main-image" src="/static/image_start.png" />
+    </div>
+    <div id="commands">
+        <button id="button-switch-camera" name="Switch camera">Switch camera</button>
+    </div>
 </div>
 
 <script>
-    var socket = io.connect('http://localhost');
+    var socket = io.connect('/');
     socket.on('image', function (data) {
         $('#main-image').attr('src', data.data);
+    });
+
+    $('#button-switch-camera').bind('click', function() {
+        socket.emit('data', { type: 'switch-camera' });
     });
 </script>
 

@@ -1,6 +1,8 @@
 var net = require('net');
 
 exports.listen = function(port, dataCallback) {
+    var socket = null;
+
     var server = net.createServer(function(connection) {
         var bufferedData = "";
         console.log('client connected');
@@ -18,15 +20,28 @@ exports.listen = function(port, dataCallback) {
             var completeData = bufferedData;
             bufferedData = "";
 
-            console.log('data received: ' + completeData);
+            console.log('data received!');
             dataCallback.call(this, completeData);
         });
 
         connection.on('end', function() {
             console.log('client disconnected');
         });
+
+        socket = connection;
     });
+
+    var write = function(data) {
+        if (socket !== null) {
+            socket.write(data, 'utf8');
+        }
+    };
+
     server.listen(port, function() {
         console.log('server bound');
     });
+
+    return {
+        write: write
+    };
 };

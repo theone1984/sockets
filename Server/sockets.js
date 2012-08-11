@@ -1,10 +1,7 @@
 var fs = require('fs');
 var io = require('socket.io');
-var toDataUrl = require('toDataUrl');
 
-
-
-exports.createSocket = function() {
+exports.createSocket = function(dataCallback) {
     var ioManager;
     var serverSocket;
     var started = false;
@@ -16,9 +13,25 @@ exports.createSocket = function() {
 
     var setConnectionListener = function () {
         ioManager.sockets.on('connection', function(socket) {
+            socket.on('data', getData);
+
             serverSocket = socket;
             started = true;
         });
+    };
+
+    var getData = function(data) {
+        if (data === undefined || data === null ||
+            data.type === undefined || data.type === null) {
+            return;
+        }
+        if (typeof dataCallback !== 'function') {
+            return;
+        }
+
+        console.log('Got data from client: ' + data.type);
+
+        dataCallback.call(this, data.type);
     };
 
     var write = function(message) {
