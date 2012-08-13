@@ -1,34 +1,52 @@
-var http = require('http');
-var express = require('express');
-var ejs = require('ejs');
-var sockets = require('./sockets.js');
-var socketServer = require('./socket-server.js');
+var httpModule = require('http');
+var expressModule = require('express');
 
-var dataCallbackFromSocket = function(data) {
-    socketToClient.writeImage(data);
-};
+var ipDeterminerModule = require('./ip-determiner.js');
+var broadcasterModule = require('./broadcaster.js');
 
-var serverSocket = socketServer.listen(9090, dataCallbackFromSocket);
+var webSocketServerModule = require('./websocket-server.js');
+var socketServerModule = require('./socket-server.js');
+var webappConfigurerModule = require('./webapp-configurer.js');
 
-var dataCallbackFromWebSocket = function(event) {
-    console.log('Registered event ' + event);
-    serverSocket.write(event);
-};
+(function program() {
+    var broadcaster;
 
-var socketToClient = sockets.createSocket(dataCallbackFromWebSocket);
+    (function __construct() {
+        ipDeterminerModule.getIpAddresses(onIpAddressAvailable);
+    })();
 
-var app = express();
-var server = http.createServer(app);
-socketToClient.initialize(server);
+    function onIpAddressAvailable(error, ipAddresses) {
+        console.log('Using IP address ' + ipAddresses[0] + ' for broadcast');
+        startBroadcast();
+        //startServer();
+    }
 
-app.use(express.bodyParser());
-app.use("/static", express.static(__dirname + '/static'));
-app.set('views', __dirname + '/views');
+    function startBroadcast() {
+        broadcaster = broadcasterModule.createBroadcaster("224.0.0.114", 8283);
+        broadcaster.start();
+    }
 
-app.engine('.html', ejs.__express);
+    function startServer() {
+        var serverSocket = socketServerModule.listen(9090, dataCallbackFromSocket);
+        var browserSocket = webSocketServerModule.createSocket(dataCallbackFromWebSocket);
 
-app.get('/', function (req, res) {
-    res.render('sockets.html');
-});
+        var app = expressModule();
+        var server = httpModule.createServer(app);
+        browserSocket.initialize(server);
 
-server.listen(80);
+        webappConfigurerModule.configure(app);
+
+        server.listen(80);
+    }
+
+    function dataCallbackFromSocket(data) {
+        socketToClient.writeImage(data);
+    }
+
+    function dataCallbackFromWebSocket(event) {
+        console.log('Registered event ' + event);
+        serverSocket.write(event);
+    }
+
+
+})();
