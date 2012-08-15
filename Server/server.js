@@ -21,14 +21,18 @@ var webappConfigurerModule = require('./webapp-configurer.js');
     })();
 
     function onIpAddressAvailable(error, ipAddresses) {
-        console.log('Using IP address ' + ipAddresses[0] + ' for broadcast');
-        //startBroadcast();
+        var foundIp = ipAddresses[0];
+        console.log('Using IP address ' + foundIp + ' for broadcast');
+
         startServer();
+        startBroadcast(foundIp);
     }
 
-    function startBroadcast() {
-        broadcaster = broadcasterModule.createBroadcaster("225.2.2.114", 8283);
-        broadcaster.start();
+    function startBroadcast(foundIp) {
+        broadcaster = broadcasterModule.createBroadcaster(foundIp, 9090, '225.2.2.114', 8283);
+        broadcaster.on('bound', function() {
+            broadcaster.start();
+        });
     }
 
     function startServer() {
@@ -41,17 +45,15 @@ var webappConfigurerModule = require('./webapp-configurer.js');
 
         webappConfigurerModule.configure(app);
 
-        server.listen(80);
+        server.listen(8080);
     }
 
     function dataCallbackFromSocket(data) {
-        socketToClient.writeImage(data);
+        browserSocket.writeImage(data);
     }
 
     function dataCallbackFromWebSocket(event) {
         console.log('Registered event ' + event);
         serverSocket.write(event);
     }
-
-
 })();

@@ -5,12 +5,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
-import roboguice.inject.ContextScoped;
+import roboguice.inject.ContextSingleton;
 
 import com.mozquitobytes.spyonandroid.interfaces.DataFromServerListener;
 import com.mozquitobytes.spyonandroid.interfaces.ErrorListener;
 
-@ContextScoped
+@ContextSingleton
 public class SocketClient  {
     private static final String MESSAGE_SEPARATOR = "\u0000";
     private String hostName;

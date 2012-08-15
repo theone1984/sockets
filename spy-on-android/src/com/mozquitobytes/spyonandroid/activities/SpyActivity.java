@@ -1,5 +1,7 @@
 package com.mozquitobytes.spyonandroid.activities;
 
+import java.net.URL;
+
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 import android.graphics.Bitmap;
@@ -21,95 +23,121 @@ import com.mozquitobytes.spyonandroid.utilities.MulticastReceiver;
 import com.mozquitobytes.spyonandroid.utilities.SocketClient;
 
 public class SpyActivity extends RoboActivity {
-    private static final String SWITCH_MESSAGE_COMMAND = "switch-camera";
+	private static final String SWITCH_MESSAGE_COMMAND = "switch-camera";
 
-    @Inject
-    private MulticastReceiver multicastReceiver;
-    
-    @Inject
-    private SocketClient socketClient;
-    
-    @Inject
-    private CameraHandler cameraHandler;
+	@Inject
+	private MulticastReceiver multicastReceiver;
+	
+	@Inject
+	private SocketClient socketClient;
 
-    @InjectView(R.id.imageViewCamera)
-    private ImageView imageView;
-    
-    @InjectView(R.id.button)
-    private Button button;
-    
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        
-        multicastReceiver.connect("225.2.2.114", 8283);
-        
-//        setOnClickHandler();
-        
-//        initializeCameraHandlers();
-//        initializeSocketHandlers();
-//        socketClient.connect("192.168.0.102", 9090);
-    }
-    
-    private void setOnClickHandler() {
-        button.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                cameraHandler.switchCamera();
-            }
-        });
-    }
+	@Inject
+	private CameraHandler cameraHandler;
 
-    private void initializeCameraHandlers() {
-        cameraHandler.initialize();
-        
-        cameraHandler.setOnBitmapListener(new BitmapListener() {
-            public void onBitmap(Bitmap bitmap) {
-                imageView.setImageBitmap(bitmap);
-            }
-        });
-        
-        cameraHandler.setOnDataUrlListener(new DataUrlListener() {
-            public void onDataUrl(String dataUrl) {
-                if (socketClient.isConnected()) {
-                    socketClient.write(dataUrl);
-                }
-            }
-        });
-    }
-    
-    private void initializeSocketHandlers() {
-        socketClient.setOnErrorListener(new ErrorListener() {
-            public void onError(Throwable e) {
-                Log.e("socket", e.getMessage());
-            }
-        });
-        
-        socketClient.setOnDataFromServerListener(new DataFromServerListener() {
-            public void onMessage(String message) {
-                if (SWITCH_MESSAGE_COMMAND.equals(message)) {
-                    cameraHandler.switchCamera();
-                }
-            }
-        });
-    }
+	@InjectView(R.id.imageViewCamera)
+	private ImageView imageView;
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        cameraHandler.startPreviewCapture();
-    }
-    
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        cameraHandler.stopPreviewCapture();
-    }
-    
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        cameraHandler.dispose();
-//        socketClient.dispose();
-    }
+	@InjectView(R.id.button)
+	private Button button;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
+
+		setOnClickHandler();
+
+		initializeCameraHandlers();
+		initializeSocketHandlers();
+		startConnectingToServer();
+
+	}
+
+	private void setOnClickHandler() {
+		button.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				cameraHandler.switchCamera();
+			}
+		});
+	}
+	
+	private void startConnectingToServer() {
+		listenForMulticast();
+	}
+
+	private void listenForMulticast() {
+		multicastReceiver.connect("225.2.2.114", 8283);
+		multicastReceiver.setOnDataFromServerListener(new DataFromServerListener() {
+			public void onMessage(String message) {
+				try {
+					URL url = new URL(message);
+					connectToServer(url);
+					multicastReceiver.disconnect();
+				} catch (Exception e) {
+					System.out.println("bla");
+				}
+			}
+		});
+	}
+
+	private void connectToServer(URL serverUrl) {
+		String ipAddress = serverUrl.getHost();
+		int port = serverUrl.getPort();
+		
+		socketClient.connect(ipAddress, port);
+	}
+
+	private void initializeCameraHandlers() {
+		cameraHandler.initialize();
+
+		cameraHandler.setOnBitmapListener(new BitmapListener() {
+			public void onBitmap(Bitmap bitmap) {
+				imageView.setImageBitmap(bitmap);
+			}
+		});
+
+		cameraHandler.setOnDataUrlListener(new DataUrlListener() {
+			public void onDataUrl(String dataUrl) {
+				if (socketClient.isConnected()) {
+					socketClient.write(dataUrl);
+				}
+			}
+		});
+	}
+
+	private void initializeSocketHandlers() {
+		socketClient.setOnErrorListener(new ErrorListener() {
+			public void onError(Throwable e) {
+				Log.e("socket", e.getMessage());
+			}
+		});
+
+		socketClient.setOnDataFromServerListener(new DataFromServerListener() {
+			public void onMessage(String message) {
+				if (SWITCH_MESSAGE_COMMAND.equals(message)) {
+					cameraHandler.switchCamera();
+				}
+			}
+		});
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		cameraHandler.startPreviewCapture();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		cameraHandler.stopPreviewCapture();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		cameraHandler.dispose();
+		socketClient.dispose();
+		multicastReceiver.disconnect();
+	}
 }

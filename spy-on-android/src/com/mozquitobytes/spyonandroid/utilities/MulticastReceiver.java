@@ -5,16 +5,15 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
-import roboguice.inject.ContextScoped;
+import roboguice.inject.ContextSingleton;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.MulticastLock;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.inject.Inject;
+import com.mozquitobytes.spyonandroid.interfaces.DataFromServerListener;
 
-@ContextScoped
+@ContextSingleton
 public class MulticastReceiver {
     @Inject
     private Context context;
@@ -26,6 +25,8 @@ public class MulticastReceiver {
     private MulticastLock multicastLock;
     
     private boolean connected = false;
+    
+    private DataFromServerListener dataFromServerListener;
     
     public void connect(String ipAddress, int port) {
         try {
@@ -52,7 +53,7 @@ public class MulticastReceiver {
 
     private void allowMulticast() {
         WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        MulticastLock multicastLock = wm.createMulticastLock("mydebuginfo");
+        multicastLock = wm.createMulticastLock("mydebuginfo");
         multicastLock.acquire();
     }
     
@@ -60,6 +61,7 @@ public class MulticastReceiver {
         socket = new MulticastSocket(port);
         socket.setTimeToLive(100);
         socket.joinGroup(address);
+        socket.setSoTimeout(1000);
     }
     
     private void startListenToSocket() {
@@ -78,7 +80,6 @@ public class MulticastReceiver {
         try {
             doWaitForMessage();
         } catch (IOException e) {
-            throw new IllegalStateException(e);
         }
     }
     
@@ -89,12 +90,18 @@ public class MulticastReceiver {
         socket.receive(packet);
         String message = new String(packet.getData(), 0, packet.getLength());
 
-        Log.d("message", message);
+        sendMessage(message);
+    }
+    
+    private void sendMessage(String message) {
+        if (dataFromServerListener != null) {
+        	dataFromServerListener.onMessage(message);
+        }
     }
 
     public void disconnect() {
         if (!connected) {
-            throw new IllegalStateException("The socket is not yet connected");
+        	return;
         }
         
         connected = false;
@@ -105,4 +112,8 @@ public class MulticastReceiver {
         socket = null;
         multicastLock = null;
     }
+
+	public void setOnDataFromServerListener(DataFromServerListener dataFromServerListener) {
+		this.dataFromServerListener = dataFromServerListener;
+	}
 }

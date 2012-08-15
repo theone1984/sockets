@@ -2,7 +2,7 @@ package com.mozquitobytes.spyonandroid.utilities;
 
 import java.io.ByteArrayOutputStream;
 
-import roboguice.inject.ContextScoped;
+import roboguice.inject.ContextSingleton;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -18,7 +18,7 @@ import com.google.inject.Inject;
 import com.mozquitobytes.spyonandroid.interfaces.BitmapListener;
 import com.mozquitobytes.spyonandroid.interfaces.DataUrlListener;
 
-@ContextScoped
+@ContextSingleton
 public class CameraHandler {
     private Camera camera;
     private Integer cameraId = null; 

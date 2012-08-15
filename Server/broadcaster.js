@@ -1,7 +1,7 @@
 var events = require('events');
 var datagram = require('dgram');
 
-exports.createBroadcaster = function(ipAddress, group, port) {
+exports.createBroadcaster = function(realIp, tcpPort, multicastIp, multicastPort) {
     var broadcast_timeout = 1000;
 
     var socket = null;
@@ -9,12 +9,12 @@ exports.createBroadcaster = function(ipAddress, group, port) {
 
     var bound = false;
 
-    var socketReturned;
+    var socketReturned = null;
 
     (function __construct() {
         createReturnObject();
 
-        messageToBroadcast = ipAddress + ':' + port;
+        messageToBroadcast = 'http://' + realIp + ':' + tcpPort;
         createClient();
     })();
 
@@ -26,14 +26,14 @@ exports.createBroadcaster = function(ipAddress, group, port) {
 
     function createClient() {
         socket = datagram.createSocket('udp4');
-        socket.bind(ipAddress, port);
+        socket.bind(realIp, multicastPort);
 
         socket.on('listening', function() {
             socket.setTTL(128);
             socket.setBroadcast(true);
             socket.setMulticastTTL(128);
             socket.setMulticastLoopback(true);
-            socket.addMembership(group);
+            socket.addMembership(multicastIp);
 
             bound = true;
 
@@ -59,7 +59,7 @@ exports.createBroadcaster = function(ipAddress, group, port) {
 
     function broadcastMessage() {
         var message = new Buffer(messageToBroadcast);
-        socket.send(message, 0, message.length, port, group, function(err) {
+        socket.send(message, 0, message.length, multicastPort, multicastIp, function(err) {
             if (err) throw err;
         });
 
@@ -68,10 +68,9 @@ exports.createBroadcaster = function(ipAddress, group, port) {
 
     function stop() {
         bound = false;
-        stop();
         client.close();
         client = null;
     }
 
     return socketReturned;
-}
+};

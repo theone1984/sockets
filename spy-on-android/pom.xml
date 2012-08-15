@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>com.google.android</groupId>
 			<artifactId>android</artifactId>
-			<version>2.2.1</version>
+			<version>2.3.3</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- For this to work, you'll manually have to register ANDROID_HOME/extras/android/compatibility/v13/android-support-v13.jar 
@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>org.roboguice</groupId>
 			<artifactId>roboguice</artifactId>
-			<version>2.0b2</version>
+			<version>2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jtidy</groupId>
