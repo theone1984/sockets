@@ -9,6 +9,6 @@ exports.configure = function(app) {
     app.engine('.html', ejs.__express);
 
     app.get('/', function (req, res) {
-        res.render('webSocketServerModule.html');
+        res.render('sockets.html');
     });
 }
