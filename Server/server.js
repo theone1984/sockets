@@ -22,7 +22,7 @@ var webappConfigurerModule = require('./webapp-configurer.js');
     }
 
     function startBroadcast() {
-        broadcaster = broadcasterModule.createBroadcaster("224.0.0.114", 8283);
+        broadcaster = broadcasterModule.createBroadcaster("225.2.2.114", 8283);
         broadcaster.start();
     }
 

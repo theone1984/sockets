@@ -17,11 +17,15 @@ import com.mozquitobytes.spyonandroid.interfaces.DataFromServerListener;
 import com.mozquitobytes.spyonandroid.interfaces.DataUrlListener;
 import com.mozquitobytes.spyonandroid.interfaces.ErrorListener;
 import com.mozquitobytes.spyonandroid.utilities.CameraHandler;
+import com.mozquitobytes.spyonandroid.utilities.MulticastReceiver;
 import com.mozquitobytes.spyonandroid.utilities.SocketClient;
 
 public class SpyActivity extends RoboActivity {
     private static final String SWITCH_MESSAGE_COMMAND = "switch-camera";
 
+    @Inject
+    private MulticastReceiver multicastReceiver;
+    
     @Inject
     private SocketClient socketClient;
     
@@ -39,11 +43,13 @@ public class SpyActivity extends RoboActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        setOnClickHandler();
+        multicastReceiver.connect("225.2.2.114", 8283);
         
-        initializeCameraHandlers();
-        initializeSocketHandlers();
-        socketClient.connect("192.168.0.102", 9090);
+//        setOnClickHandler();
+        
+//        initializeCameraHandlers();
+//        initializeSocketHandlers();
+//        socketClient.connect("192.168.0.102", 9090);
     }
     
     private void setOnClickHandler() {
@@ -91,19 +97,19 @@ public class SpyActivity extends RoboActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        cameraHandler.startPreviewCapture();
+//        cameraHandler.startPreviewCapture();
     }
     
     @Override
     protected void onPause() {
         super.onPause();
-        cameraHandler.stopPreviewCapture();
+//        cameraHandler.stopPreviewCapture();
     }
     
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        cameraHandler.dispose();
-        socketClient.dispose();
+//        cameraHandler.dispose();
+//        socketClient.dispose();
     }
 }
