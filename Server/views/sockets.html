@@ -4,6 +4,7 @@
     <title>Socket test</title>
     <link rel="stylesheet" type="text/css" href="/static/styles.css" />
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/clientCode.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <meta charset="UTF-8"/>
 </head>
@@ -18,17 +19,6 @@
         <button id="button-switch-camera" name="Switch camera">Switch camera</button>
     </div>
 </div>
-
-<script>
-    var socket = io.connect('/');
-    socket.on('image', function (data) {
-        $('#main-image').attr('src', data.data);
-    });
-
-    $('#button-switch-camera').bind('click', function() {
-        socket.emit('data', { type: 'switch-camera' });
-    });
-</script>
 
 </body>
 </html>

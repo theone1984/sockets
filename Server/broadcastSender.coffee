@@ -1,71 +1,60 @@
-events = require 'events'
-datagram = require 'dgram'
+{EventEmitter} = require 'events'
+Datagram = require 'dgram'
 
-#TODO extend EventEmitter
-
-class BroadcastSender extends events.EventEmitter
+class BroadcastSender extends EventEmitter
   BROADCAST_TIMEOUT = 2000
 
-  bound = false
-  socket = null
+  @_socket = null
+  @_bound = false
 
-  realIpAddress = null
-  tcpPort = 0
+  constructor: (@_realIpAddress, @_tcpPort, @_multicastIpAddress, @_multicastPort) ->
+    @_messageToBroadcast = new Buffer "http://#{_realIpAddress}:#{_tcpPort}"
 
-  multicastIpAddress = null
-  multicastPort =  0
+    @_createClient()
 
-  messageToBroadcast = null
+  _createClient: =>
+    console.log "Creating multicast socket #{@_multicastIpAddress}:#{@_multicastPort} routing to #{@_realIpAddress}:#{@_tcpPort}"
 
-  constructor: (_realIpAddress, _tcpPort, _multicastIpAddress, _multicastPort) ->
-    realIpAddress = _realIpAddress
-    tcpPort = _tcpPort
-    multicastIpAddress = _multicastIpAddress
-    multicastPort = _multicastPort
+    @_socket = Datagram.createSocket 'udp4'
+    @_socket.bind @_realIpAddress, @_multicastPort
 
-    messageToBroadcast = new Buffer "http://#{_realIpAddress}:#{_tcpPort}"
+    @_socket.on 'listening', @_listeningEventHandler
+    @_socket.on 'error', @_errorEventHandler
 
-    createClient()
-
-  createClient = ->
-    console.log "Creating socket #{multicastIpAddress}:#{multicastPort} -> #{realIpAddress}:#{tcpPort}"
-
-    socket = datagram.createSocket 'udp4'
-    socket.bind realIpAddress, multicastPort
-
-    socket.on 'listening', listeningEventHandler
-    socket.on 'error', errorEventHandler
-
-  listeningEventHandler = ->
+  _listeningEventHandler: =>
     console.log 'Listening on multicast port'
 
-    socket.setTTL 128
-    socket.setBroadcast true
-    socket.setMulticastTTL 128
-    socket.setMulticastLoopback true
-    socket.addMembership multicastIpAddress
-    bound = true
+    @_socket.setTTL 128
+    @_socket.setBroadcast true
+    @_socket.setMulticastTTL 128
+    @_socket.setMulticastLoopback true
+    @_socket.addMembership @_multicastIpAddress
 
-  errorEventHandler = (err) ->
+    @_bound = true
+    @emit 'bound'
+
+  _errorEventHandler: (err) =>
     throw new Error(err) if err?
 
-  start : =>
-    throw new Error('The socket has not been bound yet') unless bound
+  start: =>
+    throw new Error('The multicast socket has not been bound yet') unless @_bound
+    console.log "Starting multicast, ping sent every #{BROADCAST_TIMEOUT} ms"
 
-    broadcastContinuously()
+    @_broadcastContinuously()
 
-  broadcastContinuously = ->
-    return unless bound
+  _broadcastContinuously: =>
+    return unless @_bound
 
-    socket.send messageToBroadcast, 0, messageToBroadcast.length, multicastPort, multicastIpAddress, errorEventHandler
-    console.log 'Broadcast sent'
+    messageLength = @_messageToBroadcast.length
+    @_socket.send @_messageToBroadcast, 0, messageLength, @_multicastPort, @_multicastIpAddress, @_errorEventHandler
 
-    setTimeout broadcastContinuously, BROADCAST_TIMEOUT
 
-  stop : =>
-    throw new Error('The socket has already been released') if bound
+    setTimeout @_broadcastContinuously, BROADCAST_TIMEOUT
 
-    bound = false
-    socket.close()
+  stop: =>
+    throw new Error('The multicast socket has already been released') if bound
+
+    @_bound = false
+    @_socket.close()
 
 module.exports = BroadcastSender
