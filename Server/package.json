@@ -6,7 +6,8 @@
         "express": "3.0.0rc2",
         "ejs": "0.8.0",
         "socket.io": "0.9.9",
-        "toDataURL": "0.1.1"
+        "toDataURL": "0.1.1",
+        "jasmine-node": "1.0.26"
     },
     "engines": {
         "node": ">= 0.8.6",

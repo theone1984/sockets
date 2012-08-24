@@ -16,8 +16,8 @@ class Server
     console.log 'Configuring webapp'
 
     @_app.use Express.bodyParser();
-    @_app.use "/static", Express.static("#{__dirname}/static")
-    @_app.set 'views', "#{__dirname}/views";
+    @_app.use "/static", Express.static("#{__dirname}/../../res/static")
+    @_app.set 'views', "#{__dirname}/../../res/views";
     @_app.engine '.html', Ejs.__express;
 
   _setHandlers: =>

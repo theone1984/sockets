@@ -1,0 +1,9 @@
+server: http://localhost:9876
+
+load:
+  - jasmine.js
+  - jasmineAdapter.js
+  - ../../bin/static/js/*.js
+
+test:
+  - ../../bin/test/client/*.js
