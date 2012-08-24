@@ -1,40 +1,40 @@
-{EventEmitter} = require 'events'
-ChildProcess = require 'child_process'
+module.exports = (child_process, events) ->
 
-exec = ChildProcess.exec
+  ChildProcess = child_process ? require 'child_process'
+  {EventEmitter} = events ? require 'events'
 
-class IpDeterminer extends EventEmitter
-  IGNORED_ADDRESS = /^(127\.0\.0\.1|::1|fe80(:1)?::1(%.*)?)$/i;
+  exec = ChildProcess.exec
 
-  @_command = null
-  @_ipFilter = null
+  class IpDeterminer extends EventEmitter
+    IGNORED_ADDRESS = /^(127\.0\.0\.1|::1|fe80(:1)?::1(%.*)?)$/i;
 
-  constructor: ->
-    @_determineVariables()
+    @_command = null
+    @_ipFilter = null
 
-  _determineVariables: =>
-    switch process.platform
-      when 'win32'
-        @_command = 'ipconfig'
-        @_ipFilter = /IP(?:v[46])?-?[^:\r\n]+:\s*([^\s]+)/g
-      when 'darwin'
-        @_command = 'ifconfig'
-        @_ipFilter = /\binet\s+([^\s]+)/g;
-      else
-        @_command = 'ifconfig'
-        @_ipFilter = /\binet\b[^:]+:\s*([^\s]+)/g
+    constructor: ->
+      @_determineVariables()
 
-  start: =>
-    exec @_command, @_execEventHandler
+    _determineVariables: =>
+      switch process.platform
+        when 'win32'
+          @_command = 'ipconfig'
+          @_ipFilter = /IP(?:v[46])?-?[^:\r\n]+:\s*([^\s]+)/g
+        when 'darwin'
+          @_command = 'ifconfig'
+          @_ipFilter = /\binet\s+([^\s]+)/g;
+        else
+          @_command = 'ifconfig'
+          @_ipFilter = /\binet\b[^:]+:\s*([^\s]+)/g
 
-  _execEventHandler: (error, stdout, sterr) =>
-    matches = stdout.match(@_ipFilter) || []
+    start: =>
+      exec @_command, @_execEventHandler
 
-    foundMatches = for match in matches
-      ip = match.replace @_ipFilter, '$1'
-      continue if IGNORED_ADDRESS.test ip
-      ip
+    _execEventHandler: (error, stdout, sterr) =>
+      matches = stdout.match(@_ipFilter) || []
 
-    @emit 'ip', foundMatches
+      foundMatches = for match in matches
+        ip = match.replace @_ipFilter, '$1'
+        continue if IGNORED_ADDRESS.test ip
+        ip
 
-module.exports = IpDeterminer
+      @emit 'ip', foundMatches

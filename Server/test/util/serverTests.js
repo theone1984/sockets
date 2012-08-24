@@ -2,13 +2,15 @@
 var jasmine = require('jasmine-node');
 var sys = require('sys');
 
-// JSMockito integration
-var jsMockito = require('jsmockito').JsMockito;
-jsMockito.Integration.Nodeunit();
-
+// Jasmine global method integration
 for(var key in jasmine) {
     global[key] = jasmine[key];
 }
+
+// JSMockito integration
+var jsMockito = require('jsmockito').JsMockito;
+
+jsMockito.Integration.Nodeunit();
 
 var isVerbose = true;
 var showColors = true;

@@ -1,37 +1,37 @@
-Express = require 'express'
-Http = require 'http'
-Ejs = require 'ejs'
+module.exports = (express, http, ejs) ->
 
-class Server
-  constructor: (@_port) ->
-    console.log "Creating webapp server for webapp on port #{@_port}"
+  Express = express ? require 'express'
+  Http = http ? require 'http'
+  Ejs = ejs ? require 'ejs'
 
-    @_app = Express()
-    @_server = Http.createServer @_app
+  class Server
+    constructor: (@_port) ->
+      console.log "Creating webapp server for webapp on port #{@_port}"
 
-    @_configure()
-    @_setHandlers()
+      @_app = Express()
+      @_server = Http.createServer @_app
 
-  _configure: =>
-    console.log 'Configuring webapp'
+      @_configure()
+      @_setHandlers()
 
-    @_app.use Express.bodyParser();
-    @_app.use "/static", Express.static("#{__dirname}/../../res/static")
-    @_app.set 'views', "#{__dirname}/../../res/views";
-    @_app.engine '.html', Ejs.__express;
+    _configure: =>
+      console.log 'Configuring webapp'
 
-  _setHandlers: =>
-    console.log 'Setting controller handlers for webapp'
+      @_app.use Express.bodyParser();
+      @_app.use "/static", Express.static("#{__dirname}/../../res/static")
+      @_app.set 'views', "#{__dirname}/../../res/views";
+      @_app.engine '.html', Ejs.__express;
 
-    @_app.get '/', (req, res) ->
-      res.render 'sockets.html'
+    _setHandlers: =>
+      console.log 'Setting controller handlers for webapp'
 
-  start: =>
-    console.log 'Starting webapp'
+      @_app.get '/', (req, res) ->
+        res.render 'sockets.html'
 
-    @_server.listen 8080
+    start: =>
+      console.log 'Starting webapp'
 
-  getServer: =>
-    @_server
+      @_server.listen 8080
 
-module.exports = Server
+    getServer: =>
+      @_server

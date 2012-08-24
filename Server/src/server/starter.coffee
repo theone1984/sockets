@@ -1,71 +1,71 @@
-IpDeterminer = require './ipDeterminer'
-BroadcastSender = require './broadcastSender'
-WebServer = require './webServer'
-TcpSocketServer = require './tcpSocketServer'
-WebSocketServer = require './webSocketServer'
+module.exports = (ipDeterminer, broadcastSender, webServer, tcpSocketServer, webSocketServer) ->
 
-class Starter
-  TCP_PORT = 9090
-  HTTP_PORT = 8080
-  MULTICAST_PORT = 8283
+  IpDeterminer = ipDeterminer ? require('./ipDeterminer')()
+  BroadcastSender = broadcastSender ? require('./broadcastSender')()
+  WebServer = webServer ? require('./webServer')()
+  TcpSocketServer = tcpSocketServer ? require('./tcpSocketServer')()
+  WebSocketServer = webSocketServer ? require('./webSocketServer')()
 
-  MULTICAST_ADDRESS = '225.2.2.114'
+  class Starter
+    TCP_PORT = 9090
+    HTTP_PORT = 8080
+    MULTICAST_PORT = 8283
 
-  @_ipDeterminer = null
-  @_broadcastSender = null
-  @_tcpSocketServer = null
-  @_webSocketServer = null
-  @_webServer = null
+    MULTICAST_ADDRESS = '225.2.2.114'
 
-  constructor: ->
-    @_determineIp()
+    @_ipDeterminer = null
+    @_broadcastSender = null
+    @_tcpSocketServer = null
+    @_webSocketServer = null
+    @_webServer = null
 
-  _determineIp: =>
-    @_ipDeterminer = new IpDeterminer()
-    @_ipDeterminer.on 'ip', @_ipEventHandler
-    @_ipDeterminer.start()
+    constructor: ->
+      @_determineIp()
 
-  _ipEventHandler: (foundAddresses) =>
-    console.log "Found #{foundAddresses.length} ip address/es"
-    return if foundAddresses.length is 0
-    usedIp = foundAddresses[0]
-    console.log "Using IP address '#{usedIp}'"
+    _determineIp: =>
+      @_ipDeterminer = new IpDeterminer()
+      @_ipDeterminer.on 'ip', @_ipEventHandler
+      @_ipDeterminer.start()
 
-    @_startBroadcast(usedIp)
+    _ipEventHandler: (foundAddresses) =>
+      console.log "Found #{foundAddresses.length} ip address/es"
+      return if foundAddresses.length is 0
+      usedIp = foundAddresses[0]
+      console.log "Using IP address '#{usedIp}'"
 
-  _startBroadcast: (realIp) =>
-    @_broadcastSender = new BroadcastSender realIp, TCP_PORT, MULTICAST_ADDRESS, MULTICAST_PORT
-    @_broadcastSender.on 'bound', @_broadcastBoundEventHandler
+      @_startBroadcast(usedIp)
 
-  _broadcastBoundEventHandler: =>
-    console.log 'Broadcast sender bound'
-    @_broadcastSender.start()
+    _startBroadcast: (realIp) =>
+      @_broadcastSender = new BroadcastSender realIp, TCP_PORT, MULTICAST_ADDRESS, MULTICAST_PORT
+      @_broadcastSender.on 'bound', @_broadcastBoundEventHandler
 
-    @_startServer()
-    @_startWebSocketServer()
-    @_startTcpSocketServer()
+    _broadcastBoundEventHandler: =>
+      console.log 'Broadcast sender bound'
+      @_broadcastSender.start()
 
-  _startServer: =>
-    @_webServer = new WebServer HTTP_PORT
-    @_webServer.start()
+      @_startServer()
+      @_startWebSocketServer()
+      @_startTcpSocketServer()
 
-  _startWebSocketServer: =>
-    @_webSocketServer = new WebSocketServer()
-    @_webSocketServer.on 'switch-camera', @_webSocketSwitchCameraEventHandler
+    _startServer: =>
+      @_webServer = new WebServer HTTP_PORT
+      @_webServer.start()
 
-    @_webSocketServer.start @_webServer.getServer()
+    _startWebSocketServer: =>
+      @_webSocketServer = new WebSocketServer()
+      @_webSocketServer.on 'switch-camera', @_webSocketSwitchCameraEventHandler
 
-  _startTcpSocketServer: =>
-    @_tcpSocketServer = new TcpSocketServer TCP_PORT
-    @_tcpSocketServer.on 'data', @_tcpSocketDataEventHandler
+      @_webSocketServer.start @_webServer.getServer()
 
-    @_tcpSocketServer.start()
+    _startTcpSocketServer: =>
+      @_tcpSocketServer = new TcpSocketServer TCP_PORT
+      @_tcpSocketServer.on 'data', @_tcpSocketDataEventHandler
 
-  _webSocketSwitchCameraEventHandler: (data) =>
-    console.log 'Registered a switch camera event'
-    @_tcpSocketServer.write 'switch-camera'
+      @_tcpSocketServer.start()
 
-  _tcpSocketDataEventHandler: (data) =>
-    @_webSocketServer.writeImage data
+    _webSocketSwitchCameraEventHandler: (data) =>
+      console.log 'Registered a switch camera event'
+      @_tcpSocketServer.write 'switch-camera'
 
-new Starter()
+    _tcpSocketDataEventHandler: (data) =>
+      @_webSocketServer.writeImage data
