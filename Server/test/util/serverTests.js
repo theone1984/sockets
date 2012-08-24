@@ -1,5 +1,10 @@
+// Jasmine integration
 var jasmine = require('jasmine-node');
 var sys = require('sys');
+
+// JSMockito integration
+var jsMockito = require('jsmockito').JsMockito;
+jsMockito.Integration.Nodeunit();
 
 for(var key in jasmine) {
     global[key] = jasmine[key];

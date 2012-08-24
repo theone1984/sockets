@@ -5,8 +5,7 @@ describe "A webserver test 1", ->
 
   beforeEach ->
 
-  it "should perform a simple addition correctly", ->
-    result = 1 + 2
-    expect(result).toEqual 3
-
-    console.log module.exports
+  it "is a simple mock test", ->
+    mockedObject = mock Array
+    mockedObject.push "one"
+    verify(mockedObject).push "one"
