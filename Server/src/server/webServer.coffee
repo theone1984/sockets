@@ -8,7 +8,7 @@ module.exports = (express, http, ejs) ->
     constructor: (@_port) ->
       console.log "Creating webapp server for webapp on port #{@_port}"
 
-      @_app = Express()
+      @_app = new Express()
       @_server = Http.createServer @_app
 
       @_configure()

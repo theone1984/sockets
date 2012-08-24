@@ -7,10 +7,14 @@ for(var key in jasmine) {
     global[key] = jasmine[key];
 }
 
-// JSMockito integration
+// JSMockito global method integration
 var jsMockito = require('jsmockito').JsMockito;
-
 jsMockito.Integration.Nodeunit();
+global['upon'] = jsMockito.when;
+
+// Hamcrest global method integrat  ion
+var jsHamcrest = require('jshamcrest').JsHamcrest
+jsHamcrest.Integration.copyMembers(global);
 
 var isVerbose = true;
 var showColors = true;
