@@ -182,7 +182,7 @@
     </section>
 
     <section>
-        <div id="workflow-image"></div>
+        <div class="workflow-image" id="workflow-process" height="1079"></div>
         <!--<img src="img/server-workflow.png" />-->
     </section>
 
@@ -216,81 +216,11 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-<script>
-
-
-    $(function() {
-        var IMAGE_HEIGHT = 1079;
-
-        var SPACE_BAR = 32;
-        var LETTER_S = 115;
-
-        var $image = $('#workflow-image');
-        var stepHeight = $image.height() - 50;
-        var maxHeight = IMAGE_HEIGHT - $image.height();
-
-        var animating = false;
-
-        $('body').keydown(function(event) {
-            var sign = 0;
-            switch( event.which ) {
-                // p, page up
-                case 80: case 33: case 75: case 38:
-                    sign = -1;
-                    break;
-                // n, page down
-                case 32: case 78: case 34: case 74: case 40:
-                    sign = +1;
-                    break;
-                // default
-                default:
-                    sign = 0;
-                    break;
-            }
-
-            if (sign == 0 || isOnWrongSlide()) {
-                return;
-            }
-
-            if (tryScroll(sign)) {
-                event.stopPropagation();
-            }
-        });
-
-        function isOnWrongSlide() {
-            return $(Reveal.getCurrentSlide()).has('#workflow-image').length == 0;
-        }
-
-        function tryScroll(sign) {
-            if (animating) {
-                return true;
-            }
-
-            var currentPosition = -parseInt($image.css('background-position-y'));
-
-            var endPosition = currentPosition + sign * stepHeight;
-            endPosition = Math.min(maxHeight, endPosition);
-            endPosition = Math.max(0, endPosition);
-
-            if (currentPosition == endPosition) {
-                return false;
-            }
-
-            $('#workflow-image').animate({
-                'background-position-y': -endPosition + 'px'
-            }, 500, function() {
-                animating = false;
-            });
-            animating = true;
-            return true;
-        }
-    });
-</script>
 
 
 <script src="lib/js/head.min.js"></script>
 <script src="js/reveal.min.js"></script>
-<script src="js/reveal.min.js"></script>
+<script src="js/reveal.workflowImages.js"></script>
 
 
 <script>
@@ -327,6 +257,7 @@
         ]
     });
 
+    Reveal.WorkflowImages.initialize();
 </script>
 
 </body>

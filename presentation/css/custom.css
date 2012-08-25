@@ -16,14 +16,17 @@
     height: 100%;
 }
 
-#workflow-image {
+.workflow-image {
+    background-position-y: 0px;
+}
+
+#workflow-process {
     margin-left: auto;
     margin-right: auto;
 
     background-image: url(../img/server-workflow.png);
-    background-position-y: 0px;
+    background-size-y: 1079px;
 
     width: 743px;
     height: 400px;
-
 }
