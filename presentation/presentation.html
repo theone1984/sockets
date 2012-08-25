@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>reveal.js - The HTML Presentation Framework</title>
+
+    <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+    <meta name="author" content="Hakim El Hattab">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet'
+          type='text/css'>
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/theme/default.css">
+    <link rel="stylesheet" href="css/custom.css">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <script>
+        // If the query includes 'print-pdf' we'll use the PDF print sheet
+        document.write('<link rel="stylesheet" href="css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="background">
+    <img src="img/background.png" />
+</div>
+
+<div class="reveal">
+
+<!-- Used to fade in a background when a specific slide state is reached -->
+<div class="state-background"></div>
+
+<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+<section>
+    <h1>Web development</h1>
+
+    <h3>mit Node.js, CoffeeScript and Jasmine</h3>
+    <p><small>by Thomas Endres</small></p>
+</section>
+
+<section>
+    <h2>Bestandsaufnahme</h2>
+
+    <section>
+        <h3>Vor wenigen Jahren</h3>
+
+        <p>
+            <br />
+            <q>
+                Friends don't let friends write JavaScript
+            </q>
+            <br /><br />
+
+            <ul>
+                <li>Internet Explorer 6</li>
+                <li>The ugly parts of JavaScript</li>
+                <li>Extrem langsam</li>
+                <li>Meist unsauberer Code</li>
+            </ul>
+
+        </p>
+    </section>
+
+    <section>
+        <h3>We've come a long way</h3>
+
+        <p>
+            Die Meinung zu JavaScript hat sich geändert:
+
+            <ul>
+                <li>Chrome V8</li>
+                <li>Firefox SpiderMonkey</li>
+                <li>Node.js</li>
+                <li>jQuery &amp; Ext JS</li>
+                <li>JavaScript - The good parts</li>
+            </ul>
+        </p>
+    </section>
+
+    <section>
+        <h3>Warum Server Side JavaScript?</h3>
+        <ul>
+            <li>Asynchrones Execution Model</li>
+            <li>Funktionale Elemente</li>
+            <li>Closures</li>
+            <li>Node.js</li>
+        </ul>
+    </section>
+</section>
+
+<section>
+    <h2>Professionelle Web-Entwicklung</h2>
+
+    <section>
+        <h3>Voraussetzungen</h3>
+
+        <ul>
+            <li>Klare Struktur</li>
+            <li>Clean Code</li>
+            <li>Test Driven Development</li>
+            <li>Dependency Injection</li>
+            <li>Continuous Integration</li>
+            <li>Logging</li>
+        </ul>
+
+    </section>
+
+    <section>
+        <h3>Java</h3>
+
+        <ul>
+            <li>Build Tool legt meist Projekt-Struktur fest</li>
+            <li>OO-Modell legt klare Code-Struktur fest</li>
+            <li>Viele Build Tools bringen Testunterstützung mit</li>
+            <li>Build Tools bringen Command Line Tools mit</li>
+            <li>Logging mit slf4j relativ standardisiert</li>
+        </ul>
+
+    </section>
+
+    <section>
+        <h3>JavaScript</h3>
+
+        <ul>
+            <li>Bisher keine akzeptierte Standard-Projektstruktur</li>
+            <li>JavaScript lässt viele Freiheiten bei der Code-Struktur</li>
+            <li>Test-Unterstützung muss selbst geschrieben werden</li>
+            <li>One-Line-Build derzeit nur mit viel Aufwand</li>
+            <li>Verschiedene Logging-Frameworks</li>
+        </ul>
+
+    </section>
+
+    <section>
+        <h3>Was tun?</h3>
+
+        <p style="margin-top: 100px;">
+            <em>&rarr; Eigene Standards setzen</em>
+        </p>
+    </section>
+
+    <section>
+        <h3>Technologiestack</h3>
+
+        <ul>
+            <li>WebStorm als IDE</li>
+            <li>Cake-Scripts als Build Tool</li>
+            <li>Code in CoffeeScript</li>
+            <li>Node + Express mit EJS</li>
+            <li>jQuery als Client Library</li>
+            <li>Jasmine-Node für Server-Tests</li>
+            <li>Jasmine über JsTestDriver für Client-Tests</li>
+            <li>JsMockito und JsHamcrest für Test Support</li>
+            <li>log4js für Logging</li>
+        </ul>
+    </section>
+
+</section>
+
+<section>
+    <h2>Die Beispiel-Anwendung</h2>
+
+    <section>
+        <a href="http://localhost:8080">
+            <img src="img/project.png" />
+       </a>
+    </section>
+
+    <section>
+        <div id="workflow-image"></div>
+        <!--<img src="img/server-workflow.png" />-->
+    </section>
+
+    <section>
+        <h2>Wichtigste Module</h2>
+
+        <ul>
+            <li>"dgram" für IP4-Multicasts</li>
+            <li>"socket.io" für Websockets (Client &amp; Server)</li>
+            <li>"net" für "normale" TCP-Sockets</li>
+            <li>"express" &amp; "ejs" für Express-Framework</li>
+            <li>"jasmine-node" für Testing</li>
+            <li>"log4js" für Logging</li>
+        </ul>
+    </section>
+</section>
+
+</div>
+
+<!-- The navigational controls UI -->
+<aside class="controls">
+    <a class="left" href="#">&#x25C4;</a>
+    <a class="right" href="#">&#x25BA;</a>
+    <a class="up" href="#">&#x25B2;</a>
+    <a class="down" href="#">&#x25BC;</a>
+</aside>
+
+<!-- Presentation progress bar -->
+<div class="progress"><span></span></div>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script>
+
+
+    $(function() {
+        var IMAGE_HEIGHT = 1079;
+
+        var SPACE_BAR = 32;
+        var LETTER_S = 115;
+
+        var $image = $('#workflow-image');
+        var stepHeight = $image.height() - 50;
+        var maxHeight = IMAGE_HEIGHT - $image.height();
+
+        var animating = false;
+
+        $('body').keydown(function(event) {
+            var sign = 0;
+            switch( event.which ) {
+                // p, page up
+                case 80: case 33: case 75: case 38:
+                    sign = -1;
+                    break;
+                // n, page down
+                case 32: case 78: case 34: case 74: case 40:
+                    sign = +1;
+                    break;
+                // default
+                default:
+                    sign = 0;
+                    break;
+            }
+
+            if (sign == 0 || isOnWrongSlide()) {
+                return;
+            }
+
+            if (tryScroll(sign)) {
+                event.stopPropagation();
+            }
+        });
+
+        function isOnWrongSlide() {
+            return $(Reveal.getCurrentSlide()).has('#workflow-image').length == 0;
+        }
+
+        function tryScroll(sign) {
+            if (animating) {
+                return true;
+            }
+
+            var currentPosition = -parseInt($image.css('background-position-y'));
+
+            var endPosition = currentPosition + sign * stepHeight;
+            endPosition = Math.min(maxHeight, endPosition);
+            endPosition = Math.max(0, endPosition);
+
+            if (currentPosition == endPosition) {
+                return false;
+            }
+
+            $('#workflow-image').animate({
+                'background-position-y': -endPosition + 'px'
+            }, 500, function() {
+                animating = false;
+            });
+            animating = true;
+            return true;
+        }
+    });
+</script>
+
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.min.js"></script>
+<script src="js/reveal.min.js"></script>
+
+
+<script>
+
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls:true,
+        progress:true,
+        history:true,
+
+        transition:Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/linear(2d)
+
+        // Optional libraries used to extend on reveal.js
+        dependencies:[
+            { src:'lib/js/highlight.js', async:true, callback:function () {
+                window.hljs.initHighlightingOnLoad();
+            } },
+            { src:'lib/js/classList.js', condition:function () {
+                return !document.body.classList;
+            } },
+            { src:'lib/js/showdown.js', condition:function () {
+                return !!document.querySelector('[data-markdown]');
+            } },
+            { src:'lib/js/data-markdown.js', condition:function () {
+                return !!document.querySelector('[data-markdown]');
+            } },
+            { src:'socket.io/socket.io.js', async:true, condition:function () {
+                return window.location.host === 'localhost:1947';
+            } },
+            { src:'plugin/speakernotes/client.js', async:true, condition:function () {
+                return window.location.host === 'localhost:1947';
+            } }
+        ]
+    });
+
+</script>
+
+</body>
+</html>
